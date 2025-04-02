@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag & Drop Rule Builder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .palette,
+        .rules-canvas {
+            min-height: 150px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 0.375rem;
+            /* Bootstrap's default */
+            border: 1px solid #dee2e6;
+            /* Bootstrap's default */
+            margin-bottom: 1rem;
+        }
+
+        .palette .draggable-item,
+        .rules-canvas .draggable-item {
+            cursor: grab;
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 0.5rem;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+        }
+
+        .rules-canvas .draggable-item {
+            background-color: #cfe2ff;
+            /* Light blue for dropped items */
+            border-color: #9ec5fe;
+        }
+
+        .rules-canvas .condition-group .draggable-item {
+            background-color: #d1e7dd;
+            /* Light green for conditions */
+            border-color: #a3cfbb;
+        }
+
+        .rules-canvas .actions-list .draggable-item {
+            background-color: #f8d7da;
+            /* Light red for actions */
+            border-color: #f1aeb5;
+        }
+
+        .rule-card {
+            margin-bottom: 1.5rem;
+            border: 1px solid #adb5bd;
+        }
+
+        .conditions-list,
+        .actions-list,
+        .condition-group-list {
+            min-height: 50px;
+            background-color: #f8f9fa;
+            border: 1px dashed #adb5bd;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 0.25rem;
+        }
+
+        .condition-group {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #fff;
+            border-radius: 0.25rem;
+        }
+
+        .ui-sortable-placeholder {
+            border: 1px dashed #0d6efd;
+            background-color: #cfe2ff;
+            height: 38px;
+            /* Adjust to match item height */
+            margin-bottom: 0.5rem;
+            visibility: visible !important;
+            /* Ensure placeholder is visible */
+        }
+
+        .draggable-item input,
+        .draggable-item select {
+            max-width: 150px;
+            /* Limit input width */
+            display: inline-block !important;
+            /* Override BS potentially */
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .btn-close {
+            vertical-align: middle;
+        }
+
+        .logic-toggle {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1 class="mb-4">Business Rule Builder</h1>
+
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Palette</h2>
+                <div class="palette">
+                    <h5>Conditions</h5>
+                    <div class="list-group mb-3 palette-conditions">
+                        <div class="draggable-item list-group-item" data-type="condition" data-name="expiration_days"
+                            data-operator="less_than">
+                            Expiration Days &lt; <input type="number"
+                                class="form-control form-control-sm d-inline-block w-auto value-input"
+                                placeholder="Value">
+                        </div>
+                        <div class="draggable-item list-group-item" data-type="condition" data-name="current_inventory"
+                            data-operator="greater_than">
+                            Inventory &gt; <input type="number"
+                                class="form-control form-control-sm d-inline-block w-auto value-input"
+                                placeholder="Value">
+                        </div>
+                        <div class="draggable-item list-group-item" data-type="condition" data-name="current_inventory"
+                            data-operator="less_than">
+                            Inventory &lt; <input type="number"
+                                class="form-control form-control-sm d-inline-block w-auto value-input"
+                                placeholder="Value">
+                        </div>
+                        <div class="draggable-item list-group-item" data-type="condition" data-name="current_month"
+                            data-operator="equal_to">
+                            Month == <input type="text"
+                                class="form-control form-control-sm d-inline-block w-auto value-input"
+                                placeholder="Value">
+                        </div>
+                    </div>
+
+                    <h5>Condition Groups</h5>
+                    <div class="list-group mb-3 palette-groups">
+                        <div class="draggable-item list-group-item" data-type="group" data-logic="all">ALL (AND Group)
+                        </div>
+                        <div class="draggable-item list-group-item" data-type="group" data-logic="any">ANY (OR Group)
+                        </div>
+                    </div>
+
+                    <h5>Actions</h5>
+                    <div class="list-group palette-actions">
+                        <div class="draggable-item list-group-item" data-type="action" data-name="put_on_sale">
+                            Put on Sale (%): <input type="number"
+                                class="form-control form-control-sm d-inline-block w-auto param-input"
+                                data-param-name="sale_percentage" placeholder="e.g., 0.25">
+                        </div>
+                        <div class="draggable-item list-group-item" data-type="action" data-name="order_more">
+                            Order More (Qty): <input type="number"
+                                class="form-control form-control-sm d-inline-block w-auto param-input"
+                                data-param-name="number_to_order" placeholder="e.g., 40">
+                        </div>
+                        <div class="draggable-item list-group-item" data-type="action" data-name="change_stock_state">
+                            Change Stock State: <input type="text"
+                                class="form-control form-control-sm d-inline-block w-auto param-input"
+                                data-param-name="stock_state" placeholder="e.g., last_items">
+                        </div>
+                        <div class="draggable-item list-group-item" data-type="action" data-name="send_low_stock_email">
+                            Send Low Stock Email
+                        </div>
+                        <div class="draggable-item list-group-item" data-type="action" data-name="send_low_stock_sms">
+                            Send Low Stock SMS
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2>Rules Canvas</h2>
+                    <button id="add-rule-btn" class="btn btn-primary">Add New Rule</button>
+                </div>
+
+                <div id="rules-canvas" class="rules-canvas">
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <button id="generate-json-btn" class="btn btn-success mb-2">Generate JSON</button>
+                <h2>Generated JSON</h2>
+                <pre id="json-output" class="bg-dark text-light p-3 rounded" style="min-height: 200px;"></pre>
+            </div>
+        </div>
+    </div>
+
+    <div id="rule-template" class="card rule-card" style="display: none;">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            Rule
+            <button type="button" class="btn-close delete-rule" aria-label="Close"></button>
+        </div>
+        <div class="card-body">
+            <h6>Conditions <small class="text-muted">(Drag conditions or groups here)</small></h6>
+            <div class="condition-group" data-logic="all">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <span class="logic-toggle">ALL</span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary toggle-logic-btn">Switch to
+                            ANY</button>
+                    </div>
+                    <button type="button" class="btn-close delete-item" aria-label="Remove Group"
+                        title="Remove this condition group"></button>
+                </div>
+                <div class="condition-group-list">
+                </div>
+            </div>
+
+            <hr>
+            <h6>Actions <small class="text-muted">(Drag actions here)</small></h6>
+            <div class="actions-list">
+            </div>
+        </div>
+    </div>
+
+    <div id="condition-group-template" class="condition-group" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+                <span class="logic-toggle">LOGIC</span>
+                <button type="button" class="btn btn-sm btn-outline-secondary toggle-logic-btn">Switch Logic</button>
+            </div>
+            <button type="button" class="btn-close delete-item" aria-label="Remove Group"
+                title="Remove this condition group"></button>
+        </div>
+        <div class="condition-group-list">
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"
+        integrity="sha256-sw0iNNXmOJbQhYFuC9OF2kOlD5KQKe1y5lfBn4C9Sjg=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="rules_builder.js"></script>
+</body>
+
+</html>

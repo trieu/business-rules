@@ -1,0 +1,21 @@
+# FastAPI and Core Web Dependencies
+fastapi>=0.115.11
+uvicorn
+jinja2
+python-multipart
+
+# Utility and Configuration
+python-dotenv
+requests
+
+# Async and Database
+asyncpg
+sqlalchemy>=1.4.54
+alembic>=1.15.1
+psycopg[binary]
+
+# Pydantic (for data validation)
+pydantic[email,timezone]>=2.5.0
+
+# business rules engine
+business_rules

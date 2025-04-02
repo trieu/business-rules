@@ -1,0 +1,84 @@
+[
+  {
+    "conditions": {
+      "all": [
+        {
+          "name": "expiration_days",
+          "operator": "less_than",
+          "value": 5
+        },
+        {
+          "name": "current_inventory",
+          "operator": "greater_than",
+          "value": 20
+        }
+      ]
+    },
+    "actions": [
+      {
+        "name": "put_on_sale",
+        "params": {
+          "sale_percentage": 0.25
+        }
+      }
+    ]
+  },
+  {
+    "conditions": {
+      "any": [
+        {
+          "name": "current_inventory",
+          "operator": "less_than",
+          "value": 5
+        },
+        {
+          "all": [
+            {
+              "name": "current_month",
+              "operator": "equal_to",
+              "value": "December"
+            },
+            {
+              "name": "current_inventory",
+              "operator": "less_than",
+              "value": 20
+            }
+          ]
+        }
+      ]
+    },
+    "actions": [
+      {
+        "name": "order_more",
+        "params": {
+          "number_to_order": 40
+        }
+      }
+    ]
+  },
+  {
+    "conditions": {
+      "all": [
+        {
+          "name": "current_inventory",
+          "operator": "less_than",
+          "value": 10
+        }
+      ]
+    },
+    "actions": [
+      {
+        "name": "change_stock_state",
+        "params": {
+          "stock_state": "last_items"
+        }
+      },
+      {
+        "name": "send_low_stock_email"
+      },
+      {
+        "name": "send_low_stock_sms"
+      }
+    ]
+  }
+]

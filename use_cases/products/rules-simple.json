@@ -1,0 +1,26 @@
+[
+    {
+      "conditions": {
+        "all": [
+          {
+            "name": "expiration_days",
+            "operator": "less_than",
+            "value": 5
+          },
+          {
+            "name": "current_inventory",
+            "operator": "greater_than",
+            "value": 20
+          }
+        ]
+      },
+      "actions": [
+        {
+          "name": "put_on_sale",
+          "params": {
+            "sale_percentage": 0.25
+          }
+        }
+      ]
+    }
+  ]

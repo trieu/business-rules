@@ -1,0 +1,61 @@
+[
+    {
+        "rule_name": "Marketing Managers interested in Technology",
+        "conditions": {
+            "all": [
+                {
+                    "name": "business_unit",
+                    "operator": "equal_to",
+                    "value": "Marketing"
+                },
+                {
+                    "name": "job_title",
+                    "operator": "equal_to",
+                    "value": "Manager"
+                },
+                {
+                    "name": "personal_interests",
+                    "operator": "contains",
+                    "value": "Technology"
+                }
+            ]
+        },
+        "actions": [
+            {
+                "name": "send_targeted_email",
+                "params": {
+                    "recipient_email": "profile_email",
+                    "recipient_name": "profile_name",
+                    "campaign_id": "MKT_TECH_MGR_CAMPAIGN_Q2_2025"
+                }
+            }
+        ]
+    },
+    {
+        "rule_name": "Any Engineer interested in AI",
+        "conditions": {
+            "all": [
+                {
+                    "name": "business_unit",
+                    "operator": "equal_to",
+                    "value": "Engineering"
+                },
+                {
+                    "name": "personal_interests",
+                    "operator": "contains",
+                    "value": "AI"
+                }
+            ]
+        },
+        "actions": [
+            {
+                "name": "send_targeted_email",
+                "params": {
+                    "recipient_email": "profile_email",
+                    "recipient_name": "profile_name",
+                    "campaign_id": "ENG_AI_INTEREST_CAMPAIGN_Q2_2025"
+                }
+            }
+        ]
+    }
+]
